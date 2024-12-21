@@ -1,0 +1,11 @@
+{
+  "name": "techtok4u",
+  "version": "1.0.0",
+  "description": "A simple project for backend assignment",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Viral Vaghela",
+  "license": "ISC"
+}
