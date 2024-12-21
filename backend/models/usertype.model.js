@@ -1,11 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 const userTypeSchema = new mongoose.Schema({
-    type: {
+    userType: {
         type: String,
         required: true,
-        enum: ["Student", "Teacher", "Admin"], 
-        default: "Student",
+        default: "student",
     }
 });
 
