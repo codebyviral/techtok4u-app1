@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.send("TechTok4U's server is up and runnign ~codebyviral");
 })
 
 const port = process.env.PORT || 8000;
