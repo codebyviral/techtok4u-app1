@@ -24,6 +24,17 @@ const addUser = async (req, res) => {
 
         const { aadharCard, panCard, profilePic } = req.files;
 
+
+        // In userController.js, add these logs:
+        console.log("Received files:", req.files);
+        console.log("Aadhar path:", aadharCard[0].path);
+        console.log("Pan path:", panCard[0].path);
+        console.log("Profile path:", profilePic[0].path);
+
+        // Before cloudinary upload
+        console.log("Attempting to upload aadhar to cloudinary from path:", aadharCard[0].path);
+        console.log("Aadhar upload result:", aadharUpload);
+
         // upload files on cloudinary
 
         const aadharUpload = await uploadOnCloudinary(aadharCard[0].path)
