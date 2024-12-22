@@ -13,12 +13,10 @@ const storage = multer.diskStorage({
         cb(null, directoryPath);
     },
     filename: function (req, file, cb) {
-        // Add timestamp to prevent filename conflicts
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        cb(null, file.originalname);
     }
 });
 
 export const upload = multer({
-    storage
+    storage,
 });
