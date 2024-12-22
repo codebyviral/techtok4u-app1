@@ -23,6 +23,18 @@ const userSchema = new mongoose.Schema({
     userType: {
         type: mongoose.Types.ObjectId,
         ref: "UserType",
+    },
+    aadharCard: {
+        type: String,
+        required: true
+    },
+    panCard: {
+        type: String,
+        required: true
+    },
+    profilePic: {
+        type: String,
+        required: true
     }
 });
 

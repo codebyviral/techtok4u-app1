@@ -1,5 +1,6 @@
 import { User } from '../models/user.model.js';
 import { UserType } from '../models/usertype.model.js';
+import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 const addUser = async (req, res) => {
     try {
@@ -15,7 +16,31 @@ const addUser = async (req, res) => {
         const userTypeExists = await UserType.findOne({ userType: userType });
         if (!userTypeExists) return res.status(400).json({ msg: 'Invalid User Type' });
 
-        const newUser = new User({ name, email, phone, address, userType: userTypeExists._id })
+        // Ensure all files are provided as in model it is required:true
+
+        if (!req.files || !req.files.aadharCard || !req.files.panCard || !req.files.profilePic) {
+            return res.status(400).json({ msg: 'Please upload all required documents' });
+        }
+
+        const { aadharCard, panCard, profilePic } = req.files;
+
+        // upload files on cloudinary
+
+        const aadharUpload = await uploadOnCloudinary(aadharCard[0].path)
+        const panUpload = await uploadOnCloudinary(panCard[0].path)
+        const profileUpload = await uploadOnCloudinary(profilePic[0].path)
+
+        if (!aadharUpload || !panUpload || !profileUpload) {
+            return res.status(500).json({ msg: "File upload failed" });
+        }
+
+        const newUser = new User({
+            name, email, phone, address,
+            userType: userTypeExists._id,
+            aadharCard: aadharUpload.url,
+            panCard: panUpload.url,
+            profilePic: profileUpload.url
+        })
         await newUser.save();
 
         return res.status(201).json({ msg: `User created successfully` })
@@ -28,7 +53,7 @@ const addUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().populate('userType','userType');
+        const users = await User.find().populate('userType', 'userType');
         res.status(200).json(users);
 
     } catch (error) {

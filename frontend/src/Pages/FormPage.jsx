@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const FormPage = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -8,13 +11,18 @@ const FormPage = () => {
     addressLine1: "",
     addressLine2: "",
     addressLine3: "",
-    userType: "Student",
+    userType: "",
     aadharCard: null,
     panCard: null,
     profilePicture: null,
   });
 
-  const [userTypes, setUserTypes] = useState(["Student", "Teacher", "Other"]);
+  const [userTypes, setUserTypes] = useState([]);
+  useEffect(() => {
+    axios.get("http://localhost:4000/api/get/all-types").then((res) => {
+      setUserTypes(res.data);
+    });
+  }, []);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newUserType, setNewUserType] = useState("");
 
@@ -28,26 +36,68 @@ const FormPage = () => {
     setFormData({ ...formData, [name]: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
-
-    // Concatenate the address lines
     const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.addressLine3}`;
-
-    // Update formData with the concatenated address
     const updatedFormData = { ...formData, address: fullAddress };
 
-    console.log("Submitted Data: ", updatedFormData);
-    alert("User added successfully!");
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", updatedFormData.name);
+      formDataToSend.append("email", updatedFormData.email);
+      formDataToSend.append("phone", updatedFormData.phone);
+      formDataToSend.append("address", updatedFormData.address);
+      formDataToSend.append("userType", updatedFormData.userType);
+
+      if (formData.aadharCard)
+        formDataToSend.append("aadharCard", formData.aadharCard);
+      if (formData.panCard) formDataToSend.append("panCard", formData.panCard);
+      if (formData.profilePicture)
+        formDataToSend.append("profilePic", formData.profilePicture);
+
+      console.log("Form Data to Send:", Array.from(formDataToSend.entries()));
+      const response = await axios.post(
+        "http://localhost:4000/api/add/user",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert(`User Created Successfully. ${response.status}`);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      toast.error("Error uploading data");
+      console.error("Error uploading data:", error);
+    }
   };
 
   const handleAddUserType = () => {
     if (newUserType.trim()) {
-      setUserTypes((prevTypes) => [...prevTypes, newUserType.trim()]);
-      setNewUserType("");
-      setIsPopupOpen(false);
+      setUserTypes([...userTypes, newUserType.trim()]);
+      setNewUserType(""); // Clear the input field
+      setIsPopupOpen(false); // Close the popup
     } else {
       alert("Please enter a valid user type.");
+    }
+  };
+
+  const addUserType = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:4000/api/add/user-type`,
+        {
+          userType: newUserType,
+        }
+      );
+      alert("User Type Added Successfully");
+    } catch (error) {
+      console.error("Error adding user type:", error);
+    } finally {
+      location.reload();
     }
   };
 
@@ -146,10 +196,11 @@ const FormPage = () => {
               value={formData.userType}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border rounded-lg"
+              required
             >
               {userTypes.map((type, index) => (
-                <option key={index} value={type}>
-                  {type}
+                <option key={index} value={type.userType}>
+                  {type.userType}
                 </option>
               ))}
             </select>
@@ -167,6 +218,7 @@ const FormPage = () => {
           <label className="block text-sm font-medium mb-1">Aadhar Card</label>
           <input
             type="file"
+            id="aadharCard"
             name="aadharCard"
             onChange={handleFileChange}
             className="w-full"
@@ -177,6 +229,7 @@ const FormPage = () => {
           <label className="block text-sm font-medium mb-1">Pan Card</label>
           <input
             type="file"
+            id="panCard"
             name="panCard"
             onChange={handleFileChange}
             className="w-full"
@@ -189,6 +242,7 @@ const FormPage = () => {
           </label>
           <input
             type="file"
+            id="profilePic"
             name="profilePicture"
             onChange={handleFileChange}
             className="w-full"
@@ -199,7 +253,7 @@ const FormPage = () => {
           type="submit"
           className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
         >
-          Submit
+          {loading ? `Uploading...` : "Submit"}
         </button>
       </form>
 
@@ -210,8 +264,10 @@ const FormPage = () => {
             <h3 className="text-lg font-bold mb-4">Add New User Type</h3>
             <input
               type="text"
-              value={newUserType}
-              onChange={(e) => setNewUserType(e.target.value)}
+              id="newUserType-value"
+              onChange={(e) => {
+                setNewUserType(e.target.value);
+              }}
               placeholder="Enter new user type"
               className="w-full px-3 py-2 border rounded-lg mb-4"
             />
@@ -223,7 +279,7 @@ const FormPage = () => {
                 Cancel
               </button>
               <button
-                onClick={handleAddUserType}
+                onClick={addUserType}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg"
               >
                 Add
