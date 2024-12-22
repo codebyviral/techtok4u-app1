@@ -2,9 +2,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 
-
-const directoryPath = path.resolve('public/temp');
-
+const directoryPath = '/tmp/uploads';
 
 if (!fs.existsSync(directoryPath)) {
     fs.mkdirSync(directoryPath, { recursive: true });
@@ -12,7 +10,7 @@ if (!fs.existsSync(directoryPath)) {
 
 const storage = multer.diskStorage({
     destination: function (req, res, cb) {
-        cb(null, directoryPath); 
+        cb(null, directoryPath);
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
