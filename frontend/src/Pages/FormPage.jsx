@@ -19,7 +19,7 @@ const FormPage = () => {
 
   const [userTypes, setUserTypes] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:4000/api/get/all-types").then((res) => {
+    axios.get("https://techtok4u-app1-backend.vercel.app/api/get/all-types").then((res) => {
       setUserTypes(res.data);
     });
   }, []);
@@ -58,7 +58,7 @@ const FormPage = () => {
 
       console.log("Form Data to Send:", Array.from(formDataToSend.entries()));
       const response = await axios.post(
-        "http://localhost:4000/api/add/user",
+        "https://techtok4u-app1-backend.vercel.app/api/add/user",
         formDataToSend,
         {
           headers: {
@@ -88,7 +88,7 @@ const FormPage = () => {
   const addUserType = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:4000/api/add/user-type`,
+        `https://techtok4u-app1-backend.vercel.app/api/add/user-type`,
         {
           userType: newUserType,
         }

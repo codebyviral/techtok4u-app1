@@ -12,7 +12,7 @@ const app = express();
 dotenv.config();
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: 'https://techtok4u-app1-frontend.vercel.app',
     method: 'GET, POST, DELETE, PATCH, HEAD',
     Credentials: true,
     allowedHeaders: 'Content-Type, Authorization'

@@ -10,12 +10,12 @@ const HomePage = () => {
 
   useEffect(() => {
     // Fetch all users
-    axios.get("http://localhost:4000/api/get/all-users").then((res) => {
+    axios.get("https://techtok4u-app1-backend.vercel.app/api/get/all-users").then((res) => {
       setUsers(res.data);
     });
 
     // Fetch all User Types
-    axios.get("http://localhost:4000/api/get/all-types").then((res) => {
+    axios.get("https://techtok4u-app1-backend.vercel.app/api/get/all-types").then((res) => {
       setUserTypes(res.data);
     });
   }, []);
